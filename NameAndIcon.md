@@ -1,0 +1,1 @@
+I want to keep the name of the app as "Node" and the icon as the one in the image - "Node_Logo.png".

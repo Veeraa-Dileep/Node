@@ -1,0 +1,1 @@
+Hey, I want an apk out of this if you can do it do it or I have android studio installed on my pc. so guide me step by step to achive this apk.
