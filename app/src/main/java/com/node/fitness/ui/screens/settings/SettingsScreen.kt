@@ -56,22 +56,16 @@ fun SettingsScreen(
     // Show success/error snackbar
     LaunchedEffect(uiState.exportSuccess) {
         uiState.exportSuccess?.let { success ->
-            if (success) {
-                android.widget.Toast.makeText(context, "Data exported successfully", android.widget.Toast.LENGTH_SHORT).show()
-            } else {
-                android.widget.Toast.makeText(context, "Export failed", android.widget.Toast.LENGTH_SHORT).show()
-            }
+            val msg = if (success) "Data exported successfully" else (uiState.statusMessage ?: "Export failed")
+            android.widget.Toast.makeText(context, msg, android.widget.Toast.LENGTH_LONG).show()
             viewModel.clearExportStatus()
         }
     }
 
     LaunchedEffect(uiState.importSuccess) {
         uiState.importSuccess?.let { success ->
-            if (success) {
-                android.widget.Toast.makeText(context, "Data restored successfully", android.widget.Toast.LENGTH_SHORT).show()
-            } else {
-                android.widget.Toast.makeText(context, "Import failed", android.widget.Toast.LENGTH_SHORT).show()
-            }
+            val msg = if (success) "Data restored successfully" else (uiState.statusMessage ?: "Import failed")
+            android.widget.Toast.makeText(context, msg, android.widget.Toast.LENGTH_LONG).show()
             viewModel.clearImportStatus()
         }
     }

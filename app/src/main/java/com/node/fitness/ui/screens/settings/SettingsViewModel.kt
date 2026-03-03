@@ -48,17 +48,26 @@ class SettingsViewModel @Inject constructor(
                 preferencesDataStore.reminderMeasurementsFlow,
                 preferencesDataStore.reminderPhotosFlow
             ) { darkMode, weight, measurements, photos ->
-                SettingsUiState(
-                    isDarkMode = darkMode,
-                    isWeightReminderEnabled = weight,
-                    isMeasurementsReminderEnabled = measurements,
-                    isPhotosReminderEnabled = photos
-                )
-            }.collect { state ->
-                _uiState.value = state
+                PreferenceSnapshot(darkMode, weight, measurements, photos)
+            }.collect { prefs ->
+                _uiState.update {
+                    it.copy(
+                        isDarkMode = prefs.isDarkMode,
+                        isWeightReminderEnabled = prefs.isWeightReminder,
+                        isMeasurementsReminderEnabled = prefs.isMeasurementsReminder,
+                        isPhotosReminderEnabled = prefs.isPhotosReminder
+                    )
+                }
             }
         }
     }
+
+    private data class PreferenceSnapshot(
+        val isDarkMode: Boolean,
+        val isWeightReminder: Boolean,
+        val isMeasurementsReminder: Boolean,
+        val isPhotosReminder: Boolean
+    )
 
     fun toggleDarkMode() {
         viewModelScope.launch {

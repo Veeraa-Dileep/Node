@@ -2,6 +2,7 @@ package com.node.fitness.data.backup
 
 import android.content.Context
 import android.util.Log
+import androidx.room.withTransaction
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
@@ -113,8 +114,8 @@ class BackupManager @Inject constructor(
             val catalog = parseArray<ExerciseCatalog>(data, "exercise_catalog")
             val mappings = parseArray<ExerciseMuscleMap>(data, "exercise_muscle_map")
 
-            // Phase 3: Clear and re-insert in a transaction
-            database.runInTransaction {
+            // Phase 3: Clear and re-insert in a coroutine-safe transaction
+            database.withTransaction {
                 database.clearAllTables()
 
                 val workoutDao = database.workoutDao()
@@ -123,18 +124,16 @@ class BackupManager @Inject constructor(
                 val catalogDao = database.exerciseCatalogDao()
 
                 // Insert in FK-safe order
-                kotlinx.coroutines.runBlocking {
-                    muscleGroups.forEach { catalogDao.insertMuscleGroup(it) }
-                    catalog.forEach { catalogDao.insertExerciseCatalog(it) }
-                    mappings.forEach { catalogDao.insertExerciseMuscleMap(it) }
-                    sessions.forEach { workoutDao.insertSessionRecord(it) }
-                    exercises.forEach { workoutDao.insertExerciseRecord(it) }
-                    sets.forEach { workoutDao.insertSetRecord(it) }
-                    prs.forEach { prDao.insertRecord(it) }
-                    weights.forEach { bodyDao.insertWeightRecord(it) }
-                    measurements.forEach { bodyDao.insertMeasurementRecord(it) }
-                    photos.forEach { bodyDao.insertPhotoRecord(it) }
-                }
+                muscleGroups.forEach { catalogDao.insertMuscleGroup(it) }
+                catalog.forEach { catalogDao.insertExerciseCatalog(it) }
+                mappings.forEach { catalogDao.insertExerciseMuscleMap(it) }
+                sessions.forEach { workoutDao.insertSessionRecord(it) }
+                exercises.forEach { workoutDao.insertExerciseRecord(it) }
+                sets.forEach { workoutDao.insertSetRecord(it) }
+                prs.forEach { prDao.insertRecord(it) }
+                weights.forEach { bodyDao.insertWeightRecord(it) }
+                measurements.forEach { bodyDao.insertMeasurementRecord(it) }
+                photos.forEach { bodyDao.insertPhotoRecord(it) }
             }
 
             val counts = mapOf(
